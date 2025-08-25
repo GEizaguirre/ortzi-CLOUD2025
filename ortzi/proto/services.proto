@@ -1,0 +1,184 @@
+syntax = "proto3";
+
+message CollectInformation{
+  string bucket = 1;
+  string key = 2;
+  int32 partition_id = 3;
+}
+
+message IOInformation {
+  string bucket = 1;
+  string key = 2;
+  int32 partition_id = 3;
+  int32 num_partitions = 4;
+  string io_type = 5;
+  bool low_memory = 6;
+  bytes parse_args = 7;
+  int32 out_partitions = 8;
+}
+
+message PartitionInformation { 
+  int32 exchange_id = 1;
+  repeated int32 partition_ids = 2;
+  int32 source_tasks = 3;
+  int32 num_partitions = 4;
+  int32 num_read = 5;
+}
+
+message IOMessage {
+  int32 partition_id = 1;
+  int32 type = 2;
+  oneof data {
+    IOInformation io_info = 3;
+    PartitionInformation partition_info = 4;
+    CollectInformation collect_info = 5;
+  }
+}
+
+message AuxiliaryInformation {
+  int32 exchange_id = 1;
+  string type = 2;
+}
+
+message TaskInformation {
+  int32 stage_id = 1;
+  int32 task_id = 2;
+  repeated IOMessage input = 3;
+  optional IOMessage output = 4;
+  optional AuxiliaryInformation auxiliary_input_info = 5;
+  optional AuxiliaryInformation auxiliary_output_info = 6;
+}
+
+message NumberOfTasks {
+  int32 num_tasks = 1;
+  int32 executor_id = 2;
+}
+
+message ListTaskInformation{
+  repeated TaskInformation list_task_info = 1;
+}
+
+message EventAddPartitionStage{
+  string key = 1;
+  int32 num_read = 2;
+  int32 executor_id = 3;
+  int32 worker_id = 4;
+  string storage = 5;
+}
+
+message EventUpdatePartitionStage{
+  string key = 1;
+  int32 num_read = 2;
+  int32 executor_id = 3;
+  int32 worker_id = 4;
+}
+
+message TaskCompletedInfo{
+  int32 task_id = 1;
+  int32 stage_id = 2;
+  int32 executor_id = 3;
+  int32 worker_id = 4;
+  repeated EventAddPartitionStage list_add_partition_events = 5;
+  repeated EventUpdatePartitionStage list_upd_partition_events = 6;
+}
+
+message ListTaskCompletedInfo{
+  repeated TaskCompletedInfo task_completed_info = 1;
+}
+
+message RequestPartition{
+  string key = 1;
+  int32 worker_id = 2;
+  int32 exchange_id = 3;
+  int32 partition_id = 4;
+  int32 executor_id = 5;
+}
+
+message ExecutorAddress{
+  int32 executor_id = 1;
+  string backend_type = 2;
+  string executor_server_ip = 3;
+  int32 executor_server_port = 4;
+  int32 workers = 5;
+  int32 runtime_memory = 6;
+}
+
+message SavePartitionInfo{
+    string key = 1;
+    string storage = 2;
+    int32 worker_id_creator = 3;
+}
+
+message PartitionSavedInformation{
+    string key = 1;
+    int32 num_read = 2;
+    int32 worker_id = 3;
+    int32 executor_id = 4;
+    string storage = 5;
+}
+
+message EventWriteOrRead{
+  oneof event {
+    SavePartitionInfo save_partition_info = 1;
+    PartitionSavedInformation partition_saved_info = 2;
+    EventUpdatePartitionStage update_partition_info = 3;
+    string finish_executor = 4;
+  }
+}
+
+message Fanout{
+  int32 stage_id = 1;
+  int32 fanout = 2;
+}
+
+message ExecutorInformation{
+  int32 executor_id = 1;
+}
+
+message PartitionKey{
+  string key = 1;
+  int32 executor_id = 2;
+}
+
+message SaveCloudRequestDone{
+    bool request_send = 1;
+}
+
+message CloseExecutorEvent {
+  string event = 1;
+}
+
+message PingRequest {
+  string message = 1;
+}
+
+message PingResponse {
+  string reply = 1;
+  int64 timestamp = 2;
+}
+
+message EmptyResponse {}
+
+message BooleanResponse {
+  bool value = 1;
+}
+
+service Scheduler {
+  rpc SendTasks(NumberOfTasks) returns (ListTaskInformation) {}
+  rpc TaskCompleted(TaskCompletedInfo) returns (EmptyResponse) {}
+  rpc ServerRegisterRequestedPartition(RequestPartition) returns (EmptyResponse) {}
+  rpc RegisterExecutorAddress(ExecutorAddress) returns (BooleanResponse) {}
+  rpc ConsultEvents(ExecutorInformation) returns (stream EventWriteOrRead) {}
+  rpc PartitionSavedExternal(PartitionKey) returns (EmptyResponse) {}
+  rpc UpdateFanout(Fanout) returns (EmptyResponse) {}
+  rpc Ping (PingRequest) returns (PingResponse);
+
+}
+
+service Executor {
+    rpc SavePartitionInCloud(SavePartitionInfo) returns (SaveCloudRequestDone) {}
+    rpc ReadPartitionFromCloud(PartitionSavedInformation) returns (EmptyResponse) {}
+    rpc FinishExecutor(EmptyResponse) returns (EmptyResponse) {}
+    rpc UpdatePartitionExecutor(EventUpdatePartitionStage) returns(EmptyResponse) {}
+    rpc Ping(EmptyResponse) returns (EmptyResponse) {}
+}

@@ -1,0 +1,35 @@
+lithops:
+  backend: aws_lambda
+  storage: aws_s3
+  monitoring_interval: 1
+
+aws:
+  region: us-east-1
+  access_key_id: <access_key_id>
+  secret_access_key: <secret_access_key>
+  session_token: <session_token>
+
+aws_ec2:
+  delete_on_dismantle: false
+  exec_mode: create
+  instance_role: ec2LithopsInstanceRole
+  public_subnet_id: <publiv_subnet_id>
+  request_spot_instances: false
+  security_group_id: <security_group_id>
+  ssh_key_filename: <ssh_key_filename>
+  ssh_key_name: <ssh_key_name>
+  subnet_id: <private_subnet_id>
+  target_ami: <ami_id>
+  worker_instance_type: t2.micro
+
+aws_lambda:
+  execution_role: <role_arn>
+  vpc:
+    security_groups:
+    - <security_group_id>
+    subnets:
+    - <public_subnet_id>
+    - <public_subnet_id>
+
+aws_s3:
+  region: us-east-1

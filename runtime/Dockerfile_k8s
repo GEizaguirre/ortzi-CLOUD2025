@@ -1,0 +1,65 @@
+# Python 3.10
+FROM python:3.10-slim-buster
+
+RUN apt-get update \
+    && apt-get install -y \
+        zip redis-server curl \
+        g++ \
+        make \
+        cmake \
+        unzip \
+        wget \
+        zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade setuptools six pip \
+    && pip install --no-cache-dir \
+        flask \
+        pika \
+        boto3 \
+        ibm-cloud-sdk-core \
+        ibm-cos-sdk \
+        redis \
+        gevent \
+        requests \
+        PyYAML \
+        kubernetes \
+        numpy \
+        cloudpickle \
+        ps-mem \
+        tblib \
+        psutil
+
+RUN pip install --upgrade --no-cache-dir --ignore-installed \
+        plotext \
+        polars \
+        polars-lts-cpu \
+        grpcio \
+        protobuf \    
+        Cython \
+        pyarrow \
+        click \
+        aiobotocore>=2.7.0 \
+        urllib3>=2.0.7 \
+        aioboto3 \
+        aiofile \
+        networkx \
+        asciidag
+
+ENV PYTHONUNBUFFERED TRUE
+
+# Copy Lithops proxy and lib to the container image.
+ENV APP_HOME /lithops
+WORKDIR $APP_HOME
+
+COPY lithops_k8s.zip .
+RUN unzip lithops_k8s.zip && rm lithops_k8s.zip
+
+COPY ortzi.zip $APP_HOME
+RUN mkdir ortzi-dir \
+    && mv ortzi.zip ortzi-dir \
+    && cd ortzi-dir \
+    && unzip ortzi.zip \
+    && pip3 install -e . \
+    && cd ..

@@ -1,0 +1,28 @@
+[build-system]
+requires = ["numpy", "setuptools>=61.0", "wheel", "Cython"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ortzi"
+version = "0.1.1"
+description = "A practical framework for executing data analytics jobs in parallel across the cloud continuum."
+authors = [
+  { name="German Telmo Eizaguirre", email="germantelmo.eizaguirre@urv.cat" },
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  # list your project's dependencies here if any, e.g.,
+  # "pandas",
+  # "click",
+]
+
+[project.scripts]
+ortzi = "ortzi.cli:cli"
+
+[project.optional-dependencies]
+plotting = ["pyqt5"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ortzi*"]

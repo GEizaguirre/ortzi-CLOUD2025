@@ -1,0 +1,31 @@
+# Development
+error.txt
+out.txt
+.ipynb_checkpoints
+.vscode/
+
+# Virtual environment
+.venv/
+
+# Build
+build/
+*.pyc
+dist/
+ortzi.egg-info
+*.log
+*.pkl
+*.so
+ortzi/cython/read_terasort_data.c
+
+# pycache
+logging_ortzi/__pycache__/*
+ortzi/__pycache__/*
+ortzi/protobufs/__pycache__/*
+
+# Support files
+data/terasort-240m
+data/paper-experiments
+*.pickle
+# *.ipynb
+data/tpcds
+test_*
