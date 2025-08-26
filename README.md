@@ -15,10 +15,28 @@ It introduces the **Ortzi DataFrame API**—a familiar and intuitive programming
 
 ## The easiest way to execute this
 
-### 1. Install dependencies
+### Pre: Install System Dependencies
+
+Before proceeding, ensure that the following system packages are installed on your machine, as they are required to compile Ortzi's Cython extensions:
+
+- **gcc**
+- **g++**
+- **make**
+- **zip**
+
+You can install these packages using your system's package manager. For example:
+
+#### On Ubuntu/Debian:
+```bash
+sudo apt update
+sudo apt install -y gcc g++ make zip
+```
+
+### 1. Install Ortzi and it dependencies
 
 ```bash
 pip install -r requirements.txt
+pip install .
 ```
 
 ### 2. Setup AWS Credentials
