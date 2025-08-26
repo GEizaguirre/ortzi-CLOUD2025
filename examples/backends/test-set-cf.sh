@@ -5,7 +5,7 @@ if [ "$#" -gt 0 ] && ([ "$1" == "-h" ] || [ "$1" == "--help" ]); then
     echo "Usage: $0 [test: terasort|tpc-ds|tpc-ds-sort|all] [log_dir]"
     echo "Default test: all"
     echo "Default log_dir: ./logs"
-    echo "Default backend: MULTIPROCESSING"
+    echo "Default backend: CLOUD_FUNCTION"
     exit 0
 fi
 
